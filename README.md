@@ -125,6 +125,36 @@ docker run \
   -p 8080:80 chartdb
 ```
 
+### Run Frontend + Shared Backend (SQLite, Version History)
+
+This fork includes a simple Go backend with SQLite storage.
+Diagrams are stored on the server and shared across all users connected to the same backend.
+
+```bash
+docker compose up --build
+```
+
+Frontend will be available on:
+- `http://localhost:8080`
+
+The backend API is available behind frontend nginx at:
+- `/api/*`
+
+SQLite data is persisted in the `chartdb_data` Docker volume.
+
+Version history API examples:
+
+```bash
+# List versions for a diagram
+curl http://localhost:8080/api/diagrams/<diagram-id>/versions
+
+# Get a specific historical snapshot
+curl http://localhost:8080/api/diagrams/<diagram-id>/versions/<version-id>
+
+# Restore a diagram to a specific version
+curl -X POST http://localhost:8080/api/diagrams/<diagram-id>/versions/<version-id>/restore
+```
+
 > **Privacy Note:** ChartDB includes privacy-focused analytics via Fathom Analytics. You can disable this by adding `-e DISABLE_ANALYTICS=true` to the run command or `--build-arg VITE_DISABLE_ANALYTICS=true` when building.
 
 > **Note:** You must configure either Option 1 (OpenAI API key) OR Option 2 (Custom endpoint and model name) for AI capabilities to work. Do not mix the two options.

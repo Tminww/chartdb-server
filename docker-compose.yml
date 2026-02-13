@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      PORT: '8080'
+      DATA_DIR: /data
+      MAX_VERSIONS_PER_DIAGRAM: '100'
+    volumes:
+      - chartdb_data:/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - '8080:80'
+    environment:
+      OPENAI_API_KEY: ''
+      OPENAI_API_ENDPOINT: ''
+      LLM_MODEL_NAME: ''
+      API_BASE_URL: /api
+      API_BACKEND_URL: http://backend:8080
+      HIDE_CHARTDB_CLOUD: 'false'
+      DISABLE_ANALYTICS: 'false'
+    restart: unless-stopped
+
+volumes:
+  chartdb_data:
